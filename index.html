@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020617">
+<title>De Zaalcoach V4 Mobile</title>
+<style>
+:root{
+  --bg:#020617;--panel:#0f172a;--panel2:#111827;--line:#334155;
+  --text:#e5e7eb;--muted:#94a3b8;--blue:#38bdf8;--green:#22c55e;
+  --red:#ef4444;--yellow:#facc15;--orange:#fb923c;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+body{
+  background:
+    radial-gradient(circle at top left,rgba(56,189,248,.18),transparent 34%),
+    radial-gradient(circle at top right,rgba(34,197,94,.13),transparent 35%),
+    linear-gradient(180deg,#020617,#0f172a 52%,#020617);
+  padding-bottom:calc(82px + env(safe-area-inset-bottom));
+}
+header{
+  position:sticky;top:0;z-index:20;background:rgba(2,6,23,.95);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+  padding:12px 14px;
+}
+header h1{font-size:20px;margin:0}
+header p{margin:3px 0 0;color:var(--muted);font-size:12px}
+main{padding:14px;max-width:820px;margin:0 auto}
+h2,h3{margin-top:0}
+.card{
+  background:rgba(17,24,39,.94);border:1px solid var(--line);
+  border-radius:18px;padding:15px;margin-bottom:13px;
+  box-shadow:0 12px 26px rgba(0,0,0,.26);
+}
+.stat{
+  background:#0b1220;border:1px solid var(--line);border-radius:15px;
+  padding:12px;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr;gap:10px}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
+.value{font-size:22px;font-weight:900}
+.muted{color:var(--muted)}
+.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}.yellow{color:var(--yellow)}
+button{
+  min-height:46px;border:0;border-radius:13px;background:#253044;color:var(--text);
+  font-weight:800;padding:10px 13px;cursor:pointer;
+}
+button:active{transform:scale(.98)}
+button.primary{background:linear-gradient(135deg,#0284c7,#2563eb)}
+button.success{background:linear-gradient(135deg,#16a34a,#15803d)}
+button.warning{background:linear-gradient(135deg,#f59e0b,#b45309)}
+button.danger{background:linear-gradient(135deg,#dc2626,#991b1b)}
+button.small{min-height:36px;font-size:12px;padding:7px 10px}
+button.full{width:100%}
+button:disabled{opacity:.45}
+input,select{
+  width:100%;min-height:46px;padding:10px;border-radius:12px;
+  border:1px solid var(--line);background:#020617;color:var(--text);
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.actions button{flex:1;min-width:120px}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;padding:5px 10px;
+  border-radius:999px;background:#263244;font-size:12px;font-weight:900;
+}
+.dot{width:12px;height:12px;border-radius:999px;display:inline-block;border:1px solid rgba(255,255,255,.35)}
+.item,.club-card,.option-card{
+  background:#0b1220;border:1px solid var(--line);border-radius:16px;
+  padding:13px;margin-bottom:10px;
+}
+.club-card{position:relative;overflow:hidden;cursor:pointer}
+.club-card:before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--c)}
+.notice{
+  border-left:4px solid var(--blue);background:#08111f;border-radius:13px;
+  padding:12px;margin-bottom:13px;
+}
+.bottom-nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(2,6,23,.97);
+  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);
+  padding:7px 7px calc(7px + env(safe-area-inset-bottom));gap:6px;
+}
+.bottom-nav button{
+  min-height:54px;font-size:11px;padding:6px 3px;border-radius:14px;
+  background:#111827;color:var(--muted);
+}
+.bottom-nav button.active{background:#1e293b;color:white;border:1px solid var(--blue)}
+.table-wrap{overflow-x:auto;border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{padding:9px;border-bottom:1px solid var(--line);font-size:13px;text-align:left}
+th{font-size:11px;color:var(--muted);text-transform:uppercase;background:rgba(30,41,59,.65)}
+.kit-wrap{display:flex;gap:14px;align-items:center}
+.kit{
+  width:58px;height:74px;border-radius:18px 18px 10px 10px;
+  border:2px solid rgba(255,255,255,.32);position:relative;
+  box-shadow:0 10px 20px rgba(0,0,0,.3);flex-shrink:0;
+}
+.kit:before,.kit:after{content:"";position:absolute;top:16px;width:17px;height:36px;border-radius:10px;background:inherit}
+.kit:before{left:-12px;transform:rotate(12deg)}
+.kit:after{right:-12px;transform:rotate(-12deg)}
+.kit.plain{background:var(--p)}
+.kit.vertical{background:repeating-linear-gradient(90deg,var(--p) 0 11px,var(--s) 11px 22px)}
+.kit.horizontal{background:repeating-linear-gradient(0deg,var(--p) 0 11px,var(--s) 11px 22px)}
+.kit.sash{background:linear-gradient(135deg,transparent 0 42%,var(--s) 42% 58%,transparent 58%),var(--p)}
+.match-score{display:grid;grid-template-columns:1fr 90px 1fr;gap:8px;align-items:center}
+.team-box{
+  background:#0b1220;border:1px solid var(--line);border-radius:16px;padding:12px 8px;
+  text-align:center;min-height:82px;position:relative;overflow:hidden;
+}
+.team-box:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--tc),transparent);opacity:.16}
+.team-box strong{position:relative;font-size:13px}
+.score{text-align:center;font-size:30px;font-weight:900}
+.minute{text-align:center;color:var(--muted);font-size:11px;margin-top:3px}
+.commentary{
+  background:#020617;border:1px solid var(--line);border-radius:16px;padding:10px;
+  min-height:360px;max-height:470px;overflow:auto;font-family:"Courier New",monospace;
+}
+.comment-line{
+  width:100%;padding:10px 11px;margin-bottom:6px;border-radius:10px;color:white;
+  font-weight:900;font-size:13px;border:1px solid rgba(255,255,255,.14);
+  animation:slideIn .14s ease-out;
+}
+.comment-line.neutral{background:#1e293b;color:#cbd5e1}
+.comment-line.goal{text-transform:uppercase;animation:goalFlash .7s ease-in-out 5}
+.comment-line.cardevent{box-shadow:inset 0 0 0 2px rgba(250,204,21,.5)}
+.comment-line.injury{box-shadow:inset 0 0 0 2px rgba(239,68,68,.55)}
+.start{text-align:center;padding:20px 0}
+.start h1{font-size:34px;margin-bottom:5px}
+@keyframes slideIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes goalFlash{
+  0%{filter:brightness(1);transform:scale(1)}
+  25%{filter:brightness(2.35);transform:scale(1.012)}
+  50%{filter:brightness(.8);transform:scale(1)}
+  75%{filter:brightness(2.2);transform:scale(1.012)}
+  100%{filter:brightness(1);transform:scale(1)}
+}
+@media(min-width:680px){.grid3{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>De Zaalcoach V4 Mobile</h1>
+  <p id="topInfo">Mobiele carrièreversie · localStorage-save</p>
+</header>
+
+<main id="app"><div class="start"><h1>De Zaalcoach</h1><p class="muted">Spel wordt geladen...</p><p class="muted">Als dit blijft staan, opent je browser lokale JavaScript niet correct.</p></div></main>
+
+<nav class="bottom-nav" id="nav" style="display:none">
+  <button id="navHome" onclick="renderDashboard()">🏠<br>Home</button>
+  <button id="navMatch" onclick="renderMatchCenter()">⚽<br>Match</button>
+  <button id="navCal" onclick="renderCalendar()">📅<br>Kalender</button>
+  <button id="navTeam" onclick="renderTeam()">👥<br>Team</button>
+  <button id="navMore" onclick="renderMore()">☰<br>Meer</button>
+</nav>
+
+<script>
+window.addEventListener("error",function(e){
+  const app=document.getElementById("app");
+  if(app){app.innerHTML='<div class="card"><h2>Er liep iets mis</h2><p class="red">'+String(e.message||e.error||e)+'</p><p class="muted">Meestal is dit een oude/corrupte savegame of een Android-browser die lokale opslag blokkeert.</p><button class="danger" onclick="reset()">Save wissen</button></div>';}
+});
+window.addEventListener("unhandledrejection",function(e){
+  const app=document.getElementById("app");
+  if(app){app.innerHTML='<div class="card"><h2>Er liep iets mis</h2><p class="red">'+String((e.reason&&e.reason.message)||e.reason||e)+'</p><button class="danger" onclick="reset()">Save wissen</button></div>';}
+});
+function by(id){return document.getElementById(id)}
+function storageGet(k){try{return window.localStorage?localStorage.getItem(k):null}catch(e){return null}}
+function storageSet(k,v){try{if(window.localStorage)localStorage.setItem(k,v)}catch(e){}}
+function storageRemove(k){try{if(window.localStorage)localStorage.removeItem(k)}catch(e){}}
+
+const KEY="zaalcoach_v4mob_save";
+const uid=()=>{
+  if(globalThis.crypto && typeof globalThis.crypto.randomUUID==="function") return globalThis.crypto.randomUUID();
+  return "id_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2);
+};
+
+const clubTemplates=[
+ {name:"ZVK Varey Lommel",rep:70,budget:39000,fans:1350,c1:"#38bdf8",c2:"#0f172a",pattern:"vertical"},
+ {name:"Futsal Hasselt",rep:66,budget:32000,fans:1180,c1:"#ef4444",c2:"#111827",pattern:"sash"},
+ {name:"Indoor Eksel",rep:58,budget:24000,fans:860,c1:"#22c55e",c2:"#052e16",pattern:"plain"},
+ {name:"Genk United",rep:63,budget:29000,fans:1040,c1:"#facc15",c2:"#1e1b4b",pattern:"horizontal"},
+ {name:"Pannekoeken United",rep:56,budget:22000,fans:780,c1:"#fb923c",c2:"#431407",pattern:"plain"},
+ {name:"Turnhout Tigers",rep:59,budget:24500,fans:850,c1:"#a855f7",c2:"#1e1b4b",pattern:"vertical"},
+ {name:"Leuven Five",rep:67,budget:33000,fans:1250,c1:"#14b8a6",c2:"#042f2e",pattern:"sash"},
+ {name:"Kempen Kings",rep:61,budget:26500,fans:930,c1:"#f43f5e",c2:"#1f2937",pattern:"horizontal"}
+];
+
+const lowerNames=["Antwerp Indoor","Brussels Futsal Pro","Gent Zaal","Namur Five","Charleroi Futsal","Mechelen Minivoetbal","Kortrijk Indoor"];
+const euroNames=["Barcelona Sala","Roma Futsal","Lisboa Indoor","Amsterdam Five","Paris Futsal Club","Dortmund Halle"];
+const refs=["Dimitri Jannis","Dieter Jannis","Stijn Lehembre","Koen Martens","Bert Smeets","Nicolas Peeters","Yves Daniëls"];
+const first=["Jens","Tom","Karim","Lars","Samir","Niels","Mohamed","Daan","Bram","Ruben","Yassin","Milan","Diego","Arno","Kobe","Ilias","Tibo","Noah","Seppe","Jonas","Wout","Senne","Bilal","Mathis","Axel","Dries"];
+const last=["Peeters","Janssens","El Amrani","Vrancken","Benali","Hermans","Azzouzi","Claes","Maes","Willems","Jacobs","Mertens","Driessen","Smets","Martens","Verheyen","Lemmens","Smeets","Michiels"];
+const positions=["Keeper","Verdediger","Flank","Pivot"];
+const tactics=["Voorzichtig","Gebalanceerd","Hoog druk zetten","Counteren","Balbezit","Alles-of-niets"];
+const staffRoles=[
+ ["assistant","Assistent","Tactische bonus"],
+ ["fitness","Conditiecoach","Minder conditieverlies"],
+ ["scout","Scout","Meer transferopties"],
+ ["physio","Fysio","Minder blessures"],
+ ["commercial","Commercieel","Betere sponsors"]
+];
+
+let S=null,live=null,liveTimer=null,currentTab="home";
+
+/* Helpers */
+function r(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function euro(n){return"€"+Math.round(n).toLocaleString("nl-BE")}
+function pname(){return pick(first)+" "+pick(last)}
+function save(){storageSet(KEY,JSON.stringify(S))}
+function load(){
+ try{
+  let x=localStorage.getItem(KEY);if(!x)return false;
+  S=JSON.parse(x);
+  if(!S||!Array.isArray(S.teams)||!Array.isArray(S.players)||!Array.isArray(S.schedule)||S.userTeamId===undefined) throw new Error("Ongeldige savegame");
+  return true;
+ }catch(e){
+  console.warn("Savegame kon niet geladen worden:",e);
+  localStorage.removeItem(KEY);S=null;return false;
+ }
+}
+function reset(){if(confirm("Savegame verwijderen?")){storageRemove(KEY);S=null;if(liveTimer)clearInterval(liveTimer);renderStart()}}
+function statObj(){return{league:{goals:0,assists:0,apps:0},cup:{goals:0,assists:0,apps:0},europe:{goals:0,assists:0,apps:0}}}
+function compName(t){return t==="league"?"Competitie":t==="cup"?"Beker":t==="europe"?"Europa":t}
+function team(){return S.teams.find(t=>t.id===S.userTeamId)}
+function teamById(id){return S.teams.find(t=>t.id===id)}
+function squad(id){return S.players.filter(p=>p.teamId===id)}
+function freePlayers(){return S.players.filter(p=>p.teamId===null)}
+function sorted(a){return[...a].sort((x,y)=>rating(y)-rating(x))}
+function staffBonus(k){let s=S.staff[k];return s?s.rating:0}
+function wages(){return squad(S.userTeamId).reduce((s,p)=>s+p.wage,0)}
+function avg(id){let sq=squad(id);return sq.length?Math.round(sq.reduce((s,p)=>s+rating(p),0)/sq.length):0}
+
+/* Player */
+function rating(p){
+ if(p.pos==="Keeper")return Math.round(p.def*.46+p.tech*.18+p.sta*.16+p.mor*.20);
+ if(p.pos==="Verdediger")return Math.round(p.def*.42+p.tech*.22+p.sta*.20+p.mor*.16);
+ if(p.pos==="Pivot")return Math.round(p.att*.43+p.tech*.28+p.sta*.14+p.mor*.15);
+ return Math.round(p.att*.30+p.def*.17+p.tech*.32+p.sta*.13+p.mor*.08);
+}
+function makePlayer(teamId,pos,level){
+ let age=r(18,35),base=level+r(-10,10),att=r(base-8,base+8),def=r(base-8,base+8),tech=r(base-8,base+8),sta=r(base-8,base+8);
+ if(pos==="Keeper"){def+=14;att-=20;tech+=3}
+ if(pos==="Verdediger"){def+=10;att-=4}
+ if(pos==="Flank"){att+=5;tech+=8;sta+=4}
+ if(pos==="Pivot"){att+=12;tech+=5;def-=4}
+ let p={id:uid(),teamId,name:pname(),age,pos,att:clamp(att,28,96),def:clamp(def,28,96),tech:clamp(tech,28,96),sta:clamp(sta,28,96),mor:r(52,86),pot:clamp(r(base,base+18),46,98),contract:r(6,30),injury:0,susp:0,yellows:0,stats:statObj()};
+ let rat=rating(p);
+ p.value=Math.max(1400,Math.round(rat*rat*2.25+(p.pot-60)*170-(age-24)*130));
+ p.wage=Math.max(120,Math.round(rat*5.8+r(-45,70)));
+ return p;
+}
+function fillSquad(teamId,level){
+ ["Keeper","Keeper","Verdediger","Verdediger","Flank","Flank","Flank","Pivot","Pivot",pick(["Flank","Verdediger","Pivot"])].forEach((pos,i)=>S.players.push(makePlayer(teamId,pos,level-(i>6?5:0))));
+}
+
+/* New game */
+function newGame(userTeamId){
+ S={
+  season:1,userTeamId,teams:[],players:[],schedule:[],market:[],
+  tactic:"Gebalanceerd",lineup:{},ticketPrice:14,
+  staff:{assistant:null,fitness:null,scout:null,physio:null,commercial:null},staffPool:null,
+  sponsor:null,sponsorOffers:[],
+  manager:{name:"Manager",rep:62,trophies:[],seasons:1},
+  lower:[...lowerNames],euroQualified:[],
+  popularity:65,boardTrust:65,mediaRelation:60,
+  board:{season:"Top 4 halen",cup:"Halve finale bereiken",europe:"Kwalificatie afdwingen",finance:"Budget positief houden",next:"Nog geen analyse."},
+  history:{league:[],cup:[],europe:[],awards:[]},
+  inbox:["Welkom manager. Start je zaalvoetbalcarrière."],
+  pendingPress:null,lastMatchLog:""
+ };
+ S.teams=clubTemplates.map((c,i)=>({...c,id:i,played:0,won:0,drawn:0,lost:0,gf:0,ga:0,pts:0,trophies:[]}));
+ S.teams.forEach(t=>fillSquad(t.id,t.rep));
+ for(let i=0;i<24;i++){let p=makePlayer(null,pick(positions),r(52,79));S.players.push(p);S.market.push(p.id)}
+ S.sponsorOffers=makeSponsors(team().rep);
+ buildSchedule();
+ autoLineup();
+ save();
+ renderDashboard();
+}
+function makeSponsors(rep){
+ return Array.from({length:3}).map(()=>({id:uid(),name:pick(["Limburg Bouwgroep","EcoHeat","SanitairPlus","Kempen Energie","Indoor Sports","ProInstall"]),base:Math.round(700+rep*34+r(-250,450)),winBonus:Math.round(260+rep*10+r(-80,160)),duration:r(8,18)}));
+}
+function makeStaffPool(){
+ return staffRoles.map(([key,role,desc])=>({id:uid(),key,role,desc,name:pname(),rating:r(48,88),wage:r(320,1250),fee:r(800,3500)}));
+}
+
+/* Schedule */
+function resetStats(){
+ S.teams.forEach(t=>{if(t.id<1000){t.played=0;t.won=0;t.drawn=0;t.lost=0;t.gf=0;t.ga=0;t.pts=0}});
+ S.players.forEach(p=>p.stats=statObj());
+}
+function leagueFixtures(ids){
+ let arr=[...ids];if(arr.length%2)arr.push(null);
+ let n=arr.length,rounds=[];
+ for(let k=0;k<n-1;k++){
+  let ms=[];
+  for(let i=0;i<n/2;i++){
+   let a=arr[i],b=arr[n-1-i];
+   if(a!==null&&b!==null)ms.push(k%2?{home:b,away:a}:{home:a,away:b});
+  }
+  rounds.push(ms);arr.splice(1,0,arr.pop());
+ }
+ return rounds.concat(rounds.map(rd=>rd.map(m=>({home:m.away,away:m.home}))));
+}
+function estimateAttendance(home,away){
+ let h=teamById(home),a=teamById(away);
+ if(!h||!a)return 900;
+ let price=home===S.userTeamId?clamp(1.35-((S.ticketPrice-10)*.045),.38,1.25):1;
+ return Math.round(clamp((h.fans||900)*price+(a.rep||60)*5+r(-80,140),250,3200));
+}
+function addMatch(type,order,home,away,roundName){
+ S.schedule.push({id:uid(),type,order,home,away,roundName,played:false,hg:null,ag:null,referee:pick(refs),expectedAttendance:estimateAttendance(home,away),attendance:null});
+}
+function buildSchedule(){
+ S.schedule=[];resetStats();
+ let ids=S.teams.filter(t=>t.id<1000).map(t=>t.id);
+ leagueFixtures(ids).forEach((rd,i)=>rd.forEach(m=>addMatch("league",i+1,m.home,m.away,"Speeldag "+(i+1))));
+ let sh=[...ids].sort(()=>Math.random()-.5);
+ for(let i=0;i<4;i++)addMatch("cup",2.5,sh[i*2],sh[i*2+1],"Beker kwartfinale");
+ if(S.euroQualified.includes(S.userTeamId)){
+  [1001,1002,1003].forEach((id,i)=>{
+   if(!teamById(id)){
+    S.teams.push({id,name:euroNames[i],rep:r(68,82),budget:0,fans:1600,c1:["#2563eb","#dc2626","#16a34a"][i],c2:"#111827",pattern:"plain",played:0,won:0,drawn:0,lost:0,gf:0,ga:0,pts:0,trophies:[]});
+    fillSquad(id,S.teams.find(t=>t.id===id).rep);
+   }
+  });
+  addMatch("europe",4.7,S.userTeamId,1001,"Europese halve finale");
+  addMatch("europe",4.7,1002,1003,"Europese halve finale");
+ }
+ S.schedule.sort((a,b)=>a.order-b.order);
+}
+function nextUserMatchNoSim(){
+ return S.schedule.filter(m=>!m.played&&(m.home===S.userTeamId||m.away===S.userTeamId)).sort((a,b)=>a.order-b.order)[0]||null;
+}
+function nextUserMatch(){
+ simulateBeforeUser();
+ return nextUserMatchNoSim();
+}
+function simulateBeforeUser(){
+ let next=nextUserMatchNoSim(),limit=next?next.order:999;
+ S.schedule.filter(m=>!m.played&&m.order<=limit&&m.home!==S.userTeamId&&m.away!==S.userTeamId).forEach(simAI);
+}
+function afterCupProgress(type,roundName){
+ if(type==="cup"&&roundName==="Beker kwartfinale"&&!S.schedule.some(m=>m.roundName==="Beker halve finale")&&S.schedule.filter(m=>m.type==="cup"&&m.roundName==="Beker kwartfinale"&&!m.played).length===0){
+  let w=S.schedule.filter(m=>m.type==="cup"&&m.roundName==="Beker kwartfinale").map(winner);
+  addMatch("cup",6.5,w[0],w[1],"Beker halve finale");addMatch("cup",6.5,w[2],w[3],"Beker halve finale");
+ }
+ if(type==="cup"&&roundName==="Beker halve finale"&&!S.schedule.some(m=>m.roundName==="Beker finale")&&S.schedule.filter(m=>m.type==="cup"&&m.roundName==="Beker halve finale"&&!m.played).length===0){
+  let w=S.schedule.filter(m=>m.type==="cup"&&m.roundName==="Beker halve finale").map(winner);
+  addMatch("cup",11.5,w[0],w[1],"Beker finale");
+ }
+ if(type==="europe"&&roundName==="Europese halve finale"&&!S.schedule.some(m=>m.roundName==="Europese finale")&&S.schedule.filter(m=>m.type==="europe"&&m.roundName==="Europese halve finale"&&!m.played).length===0){
+  let w=S.schedule.filter(m=>m.type==="europe"&&m.roundName==="Europese halve finale").map(winner);
+  addMatch("europe",9.7,w[0],w[1],"Europese finale");
+ }
+ S.schedule.sort((a,b)=>a.order-b.order);
+}
+function winner(m){return m.hg>=m.ag?m.home:m.away}
+
+/* Lineup/strength */
+function availableSquad(id){return squad(id).filter(p=>p.injury<=0&&p.susp<=0)}
+function bestLineup(id){
+ let sq=availableSquad(id);if(sq.length<5)sq=squad(id);
+ const one=pos=>sorted(sq.filter(p=>p.pos===pos))[0];
+ let l=[one("Keeper"),one("Verdediger"),...sorted(sq.filter(p=>p.pos==="Flank")).slice(0,2),one("Pivot")].filter(Boolean);
+ let used=l.map(p=>p.id),rem=sorted(sq.filter(p=>!used.includes(p.id)));
+ while(l.length<5&&rem.length)l.push(rem.shift());
+ return l;
+}
+function autoLineup(){
+ let l=bestLineup(S.userTeamId);
+ S.lineup={gk:l[0]?.id||"",def:l[1]?.id||"",fl1:l[2]?.id||"",fl2:l[3]?.id||"",piv:l[4]?.id||""};
+}
+function userLineup(){
+ let ids=Object.values(S.lineup).filter(Boolean),ps=ids.map(id=>S.players.find(p=>p.id===id)).filter(Boolean);
+ if(ps.length<5||ps.some(p=>p.injury>0||p.susp>0)||new Set(ids).size<5)return bestLineup(S.userTeamId);
+ return ps;
+}
+function lineup(id){return id===S.userTeamId?userLineup():bestLineup(id)}
+function strength(id,tac,red=0){
+ let l=lineup(id);if(!l.length)return 40;
+ let A=0,D=0,T=0,ST=0,M=0;
+ l.forEach(p=>{A+=p.att;D+=p.def;T+=p.tech;ST+=p.sta;M+=p.mor});
+ A/=l.length;D/=l.length;T/=l.length;ST/=l.length;M/=l.length;
+ let s=A*.29+D*.25+T*.24+ST*.12+M*.10;
+ if(tac==="Voorzichtig")s+=D>62?2:0;
+ if(tac==="Hoog druk zetten")s+=ST>65?4:-2;
+ if(tac==="Counteren")s+=D>63?3:0;
+ if(tac==="Balbezit")s+=T>65?4:-1;
+ if(tac==="Alles-of-niets")s+=A>65?4:1;
+ if(id===S.userTeamId)s+=staffBonus("assistant")/18;
+ return Math.round(s-red*7);
+}
+function aiTac(id){
+ let t=teamById(id);if(!t)return"Gebalanceerd";
+ if(t.rep>66)return pick(["Balbezit","Hoog druk zetten","Gebalanceerd"]);
+ if(t.rep<58)return pick(["Counteren","Voorzichtig","Gebalanceerd"]);
+ return pick(["Gebalanceerd","Counteren","Hoog druk zetten"]);
+}
+function scorer(id){
+ let l=lineup(id).filter(p=>p.pos!=="Keeper"),bag=[];
+ l.forEach(p=>{let w=Math.max(1,Math.round(p.att/12));if(p.pos==="Pivot")w+=3;if(p.pos==="Flank")w+=2;for(let i=0;i<w;i++)bag.push(p)});
+ return pick(bag.length?bag:l);
+}
+function assister(id,scorerId){
+ let l=lineup(id).filter(p=>p.pos!=="Keeper"&&p.id!==scorerId);
+ return l.length&&Math.random()<.78?pick(l):null;
+}
+function randomPlayer(id){let l=lineup(id);return pick(l.length?l:squad(id))}
+function registerApps(m){[m.home,m.away].forEach(id=>lineup(id).forEach(p=>p.stats[m.type].apps++))}
+function registerGoal(type,p,a){p.stats[type].goals++;if(a)a.stats[type].assists++}
+
+/* Simulation */
+function simpleGoals(lambda){
+ lambda=clamp(lambda,.4,6.5);let L=Math.exp(-lambda),k=0,p=1;
+ do{k++;p*=Math.random()}while(p>L);
+ return k-1;
+}
+function simAI(m){
+ registerApps(m);
+ let hs=strength(m.home,aiTac(m.home))+2,as=strength(m.away,aiTac(m.away));
+ let hg=simpleGoals(2.8+(hs-as)/18),ag=simpleGoals(2.5+(as-hs)/18);
+ if(m.type!=="league"&&hg===ag){Math.random()<.5?hg++:ag++}
+ m.hg=hg;m.ag=ag;m.played=true;m.attendance=estimateAttendance(m.home,m.away)+r(-60,90);
+ for(let i=0;i<hg;i++){let s=scorer(m.home),a=assister(m.home,s.id);registerGoal(m.type,s,a)}
+ for(let i=0;i<ag;i++){let s=scorer(m.away),a=assister(m.away,s.id);registerGoal(m.type,s,a)}
+ applyResult(m);afterCupProgress(m.type,m.roundName);
+}
+function applyResult(m){
+ let h=teamById(m.home),a=teamById(m.away);
+ if(m.type==="league"){
+  h.played++;a.played++;h.gf+=m.hg;h.ga+=m.ag;a.gf+=m.ag;a.ga+=m.hg;
+  if(m.hg>m.ag){h.won++;a.lost++;h.pts+=3}
+  else if(m.hg<m.ag){a.won++;h.lost++;a.pts+=3}
+  else{h.drawn++;a.drawn++;h.pts++;a.pts++}
+ }
+ morale(m.home,m.hg,m.ag);morale(m.away,m.ag,m.hg);
+}
+function morale(id,gf,ga){
+ let d=gf>ga?r(1,4):gf===ga?r(-1,2):r(-4,-1);
+ squad(id).forEach(p=>{p.mor=clamp(p.mor+d,20,99);p.sta=clamp(p.sta-r(1,4)+Math.round(staffBonus("fitness")/35),24,99)});
+}
+function standings(){
+ return S.teams.filter(t=>t.id<1000).sort((a,b)=>b.pts-a.pts||((b.gf-b.ga)-(a.gf-a.ga))||b.gf-a.gf);
+}
+function userPos(){return standings().findIndex(t=>t.id===S.userTeamId)+1}
+
+/* UI shell */
+function setNav(tab){
+ currentTab=tab;
+ document.getElementById("nav").style.display=S?"grid":"none";
+ ["Home","Match","Cal","Team","More"].forEach(x=>document.getElementById("nav"+x).classList.remove("active"));
+ if(tab==="home")document.getElementById("navHome").classList.add("active");
+ if(tab==="match")document.getElementById("navMatch").classList.add("active");
+ if(tab==="cal")document.getElementById("navCal").classList.add("active");
+ if(tab==="team")document.getElementById("navTeam").classList.add("active");
+ if(tab==="more")document.getElementById("navMore").classList.add("active");
+}
+function top(){
+ if(!S)return;
+ document.getElementById("topInfo").textContent=`${team().name} · Seizoen ${S.season} · Budget ${euro(team().budget)}`;
+}
+function html(content,tab="more"){
+ setNav(tab);top();document.getElementById("app").innerHTML=content;save();
+}
+function updateBoard(){
+ let pos=userPos(),m=nextUserMatchNoSim();
+ S.board.season=pos<=2?"Meestrijden voor de titel":pos<=4?"Top 4 vasthouden":pos<=6?"Rustig seizoen draaien":"Degradatie vermijden";
+ S.board.finance=team().budget>=0?"Budget positief houden":"Financiën dringend herstellen";
+ if(m){
+  let opp=m.home===S.userTeamId?teamById(m.away):teamById(m.home);
+  S.board.next=team().rep>opp.rep+6?"Het bestuur verwacht winst tegen "+opp.name+".":team().rep<opp.rep-6?"Een punt tegen "+opp.name+" zou mooi zijn.":"Het bestuur verwacht een competitieve prestatie tegen "+opp.name+".";
+ }
+}
+
+/* Start */
+function renderStart(){
+ document.getElementById("nav").style.display="none";
+ let has=!!storageGet(KEY);
+ document.getElementById("app").innerHTML=`
+ <div class="start">
+  <h1>De Zaalcoach</h1>
+  <p class="muted">V4 Mobile · zaalvoetbalmanager</p>
+  ${has?`<div class="actions"><button class="success" onclick="continueGame()">Verder spelen</button><button class="danger" onclick="reset()">Save wissen</button></div>`:""}
+ </div>
+ <div class="card"><h2>Nieuwe carrière</h2>
+  ${clubTemplates.map((c,i)=>`
+   <div class="club-card" style="--c:${c.c1}" onclick="newGame(${i})">
+    <h3>${c.name}</h3>
+    <p><span class="dot" style="background:${c.c1}"></span> <span class="dot" style="background:${c.c2}"></span></p>
+    <p>Reputatie: <strong class="yellow">${c.rep}</strong> · Budget: <strong class="green">${euro(c.budget)}</strong></p>
+   </div>`).join("")}
+ </div>`;
+}
+function continueGame(){if(load())renderDashboard()}
+
+/* Dashboard */
+function renderDashboard(){
+ let m=nextUserMatch();updateBoard();
+ html(`
+ <div class="kit-wrap card">
+  <div class="kit ${team().pattern}" style="--p:${team().c1};--s:${team().c2}"></div>
+  <div>
+   <span class="pill"><span class="dot" style="background:${team().c1}"></span>${team().name}</span>
+   <p class="muted">Managerrep ${S.manager.rep} · Positie ${userPos()}e</p>
+  </div>
+ </div>
+ <div class="grid2">
+  <div class="stat"><div class="label">Budget</div><div class="value green">${euro(team().budget)}</div></div>
+  <div class="stat"><div class="label">Populariteit</div><div class="value blue">${S.popularity}%</div></div>
+  <div class="stat"><div class="label">Bestuur</div><div class="value yellow">${S.boardTrust}%</div></div>
+  <div class="stat"><div class="label">Lonen</div><div class="value">${euro(wages())}</div></div>
+ </div>
+ ${S.pendingPress?`<div class="notice"><strong>Persmoment wacht.</strong><p>Beantwoord de pers na je laatste match.</p><button class="warning full" onclick="renderPress()">Persconferentie</button></div>`:""}
+ <div class="card">
+  <h2>Dashboard</h2>
+  <p><strong>Volgende match:</strong><br>${m?`${m.roundName}: ${teamById(m.home).name} - ${teamById(m.away).name}`:"Geen match meer"}</p>
+  <p><strong>Scheidsrechter:</strong> ${m?m.referee:"-"}</p>
+  <p><strong>Verwachte opkomst:</strong> ${m?m.expectedAttendance+" toeschouwers":"-"}</p>
+  <p><strong>Bestuur:</strong> ${S.board.next}</p>
+  <div class="actions">
+   ${m?`<button class="primary" onclick="renderMatchCenter()">Matchcenter</button>`:`<button class="success" onclick="renderSeasonEnd()">Seizoen afsluiten</button>`}
+   <button onclick="renderBoard()">Bestuur</button>
+  </div>
+ </div>
+ <div class="card">
+  <h3>Laatste bericht</h3>
+  <p class="muted">${S.inbox[0]||"Geen berichten"}</p>
+ </div>`, "home");
+}
+
+/* Match UI */
+function renderMatchCenter(){
+ let m=nextUserMatch();if(!m){renderSeasonEnd();return}
+ let h=teamById(m.home),a=teamById(m.away);updateBoard();
+ html(`
+ <div class="card">
+  <h2>${m.roundName}</h2>
+  <div class="match-score">
+   <div class="team-box" style="--tc:${h.c1}"><strong style="color:${h.c1}">${h.name}</strong><p class="muted">Rat ${avg(h.id)}</p></div>
+   <div><div class="score" id="score">0 - 0</div><div class="minute" id="minute">Voor aftrap</div></div>
+   <div class="team-box" style="--tc:${a.c1}"><strong style="color:${a.c1}">${a.name}</strong><p class="muted">Rat ${avg(a.id)}</p></div>
+  </div>
+ </div>
+ <div class="card">
+  <p><strong>${compName(m.type)}</strong> · ${m.referee}</p>
+  <p class="muted">Verwachte opkomst: ${m.expectedAttendance} · Ticketprijs: ${euro(S.ticketPrice)}</p>
+  <p class="muted">${S.board.next}</p>
+  <div class="actions">
+   <button class="success" id="startBtn" onclick="startMatch()">Start</button>
+   <button class="warning" id="skipBtn" onclick="skipMatch()">Skip match</button>
+  </div>
+  <select onchange="setTac(this.value)">
+   ${tactics.map(t=>`<option ${t===S.tactic?"selected":""}>${t}</option>`).join("")}
+  </select>
+ </div>
+ <div class="commentary" id="commentary"></div>`, "match");
+}
+function setTac(t){S.tactic=t;if(live&&live.running)addLine(null,"Tactische wijziging: "+team().name+" schakelt naar "+t+".","neutral");save()}
+function addLine(teamId,text,type="normal"){
+ let box=document.getElementById("commentary");if(!box)return;
+ let d=document.createElement("div");d.className="comment-line";
+ if(teamId===null)d.classList.add("neutral");else{let t=teamById(teamId);d.style.background=`linear-gradient(90deg,${t.c1},${t.c2})`}
+ if(type==="goal")d.classList.add("goal");if(type==="card")d.classList.add("cardevent");if(type==="injury")d.classList.add("injury");
+ d.textContent=text;box.appendChild(d);box.scrollTop=box.scrollHeight;if(live)live.log.push(text);
+}
+function startMatch(){
+ let m=nextUserMatch();if(!m||liveTimer)return;
+ registerApps(m);
+ live={m,home:teamById(m.home),away:teamById(m.away),min:0,hg:0,ag:0,log:[],running:true,half:false,redH:0,redA:0};
+ document.getElementById("startBtn").disabled=true;document.getElementById("skipBtn").disabled=true;
+ addLine(null,`Aftrap. ${live.home.name} tegen ${live.away.name}. Scheidsrechter: ${m.referee}.`);
+ addLine(null,`Verwachte opkomst: ${m.expectedAttendance} toeschouwers.`);
+ updateScore();
+ liveTimer=setInterval(tick,900);
+}
+function updateScore(){
+ document.getElementById("score").textContent=live.hg+" - "+live.ag;
+ document.getElementById("minute").textContent="Minuut "+live.min;
+}
+function tick(){
+ live.min+=r(1,3);if(live.min>40)live.min=40;
+ if(live.min>=20&&!live.half){live.half=true;addLine(null,`Rust. Stand: ${live.hg} - ${live.ag}.`)}
+ let x=Math.random();if(x<.68)attackEvent();else if(x<.80)foulEvent();else if(x<.87)injuryEvent();else addLine(null,`${live.min}' Beide ploegen hergroeperen.`);
+ updateScore();if(live.min>=40)finishMatch();
+}
+function attackEvent(){
+ let ht=live.home.id===S.userTeamId?S.tactic:aiTac(live.home.id),at=live.away.id===S.userTeamId?S.tactic:aiTac(live.away.id);
+ let hs=strength(live.home.id,ht,live.redH)+2,as=strength(live.away.id,at,live.redA);
+ let poss=clamp(hs/(hs+as),.35,.65),att=Math.random()<poss?live.home.id:live.away.id,def=att===live.home.id?live.away.id:live.home.id;
+ let tac=att===S.userTeamId?S.tactic:aiTac(att);
+ let chance=clamp(.145+(strength(att,tac)-strength(def,def===S.userTeamId?S.tactic:aiTac(def)))*.008+(tac==="Alles-of-niets"?.07:0)-(tac==="Voorzichtig"?.05:0),.05,.34);
+ let p=scorer(att),tn=teamById(att).name;
+ if(Math.random()<chance){
+  let a=assister(att,p.id);if(att===live.home.id)live.hg++;else live.ag++;registerGoal(live.m.type,p,a);
+  addLine(att,`${live.min}' GOOOOAL! ${p.name} scoort voor ${tn}${a?" op aangeven van "+a.name:""}!`,"goal");
+ }else addLine(att,pick([`${live.min}' ${tn} bouwt op via ${p.name}.`,`${live.min}' ${p.name} vindt ruimte.`,`${live.min}' Schot van ${p.name}, redding keeper.`,`${live.min}' Grote kans voor ${tn}, naast!`]));
+}
+function foulEvent(){
+ let id=Math.random()<.5?live.home.id:live.away.id,p=randomPlayer(id);
+ if(Math.random()<.30){p.yellows++;addLine(id,`${live.min}' Gele kaart voor ${p.name}.`,"card");if(p.yellows>=2&&Math.random()<.45){p.susp=1;if(id===live.home.id)live.redH++;else live.redA++;addLine(id,`${live.min}' ROOD! ${p.name} moet naar de kant.`,"card")}}
+ else addLine(id,`${live.min}' Overtreding van ${p.name}. Waarschuwing.`,"card");
+}
+function injuryEvent(){
+ let id=Math.random()<.5?live.home.id:live.away.id,p=randomPlayer(id);if(!p)return;
+ let c=.20;if(p.sta<45)c+=.18;if(p.age>31)c+=.12;if(id===S.userTeamId)c-=staffBonus("physio")/300;
+ if(Math.random()<c){p.injury=r(1,5);addLine(id,`${live.min}' Blessure voor ${p.name}. ${p.injury} match(es) out.`,"injury")}
+ else addLine(id,`${live.min}' ${p.name} blijft even liggen maar kan verder.`,"injury");
+}
+function finishMatch(){
+ clearInterval(liveTimer);liveTimer=null;live.running=false;
+ if(live.m.type!=="league"&&live.hg===live.ag){Math.random()<.5?live.hg++:live.ag++;addLine(null,`Na strafschoppen: ${live.hg} - ${live.ag}.`)}
+ completeUserMatch(live.m,live.hg,live.ag,live.log);
+ addLine(null,`Eindsignaal. Eindstand: ${live.home.name} ${live.hg} - ${live.ag} ${live.away.name}.`);
+ addLine(null,"Wedstrijd verwerkt.");
+ addPostButtons();
+}
+function skipMatch(){
+ let m=nextUserMatch();if(!m)return;registerApps(m);
+ let hs=strength(m.home,m.home===S.userTeamId?S.tactic:aiTac(m.home))+2,as=strength(m.away,m.away===S.userTeamId?S.tactic:aiTac(m.away));
+ let hg=simpleGoals(2.8+(hs-as)/18),ag=simpleGoals(2.5+(as-hs)/18);
+ if(m.type!=="league"&&hg===ag){Math.random()<.5?hg++:ag++}
+ for(let i=0;i<hg;i++){let s=scorer(m.home),a=assister(m.home,s.id);registerGoal(m.type,s,a)}
+ for(let i=0;i<ag;i++){let s=scorer(m.away),a=assister(m.away,s.id);registerGoal(m.type,s,a)}
+ completeUserMatch(m,hg,ag,[`Match geskipt. Eindstand ${hg}-${ag}.`]);
+ renderPostMatch(m);
+}
+function completeUserMatch(m,hg,ag,log){
+ m.hg=hg;m.ag=ag;m.played=true;applyResult(m);afterCupProgress(m.type,m.roundName);processMoney(m);decreaseAbsences();
+ simulateSameOrder(m.order);
+ let ug=m.home===S.userTeamId?hg:ag,og=m.home===S.userTeamId?ag:hg;
+ S.pendingPress={matchId:m.id,result:ug>og?"win":ug===og?"draw":"loss",opponent:(m.home===S.userTeamId?teamById(m.away):teamById(m.home)).name};
+ S.lastMatchLog=log.join("\n");save();
+}
+function simulateSameOrder(order){S.schedule.filter(m=>!m.played&&m.order<=order&&m.home!==S.userTeamId&&m.away!==S.userTeamId).forEach(simAI)}
+function addPostButtons(){
+ let box=document.getElementById("commentary"),wrap=document.createElement("div");
+ wrap.className="actions";wrap.innerHTML=`<button class="primary" onclick="renderCompetitions()">Stand</button><button onclick="renderCalendar()">Kalender</button><button class="warning" onclick="renderPress()">Pers</button>`;
+ box.parentElement.appendChild(wrap);
+}
+function renderPostMatch(m){
+ html(`<div class="card"><h2>Wedstrijd afgelopen</h2><p>${teamById(m.home).name} - ${teamById(m.away).name}</p><h2>${m.hg} - ${m.ag}</h2><p>Scheidsrechter: ${m.referee}</p><p>Toeschouwers: ${m.attendance||"-"}</p><div class="actions"><button class="primary" onclick="renderCompetitions()">Stand</button><button onclick="renderCalendar()">Kalender</button><button class="warning" onclick="renderPress()">Pers</button></div></div>`,"match");
+}
+function decreaseAbsences(){squad(S.userTeamId).forEach(p=>{if(p.injury>0)p.injury--;if(p.susp>0)p.susp--})}
+function processMoney(m){
+ let t=team(),home=m.home===S.userTeamId,ug=m.home===S.userTeamId?m.hg:m.ag,og=m.home===S.userTeamId?m.ag:m.hg;
+ let tickets=0,att=estimateAttendance(m.home,m.away)+r(-60,90);
+ if(home){att=Math.round(clamp(t.fans*clamp(1.35-((S.ticketPrice-10)*.045),.38,1.25)+r(-80,130),250,3200));tickets=att*S.ticketPrice;t.fans=clamp(t.fans+(ug>og?r(15,45):ug===og?r(-5,15):r(-35,-8)),300,3700)}
+ m.attendance=att;
+ let spon=0;if(S.sponsor){spon+=S.sponsor.base;if(ug>og)spon+=S.sponsor.winBonus;S.sponsor.duration--;if(S.sponsor.duration<=0){S.inbox.unshift("Sponsorcontract afgelopen.");S.sponsor=null;S.sponsorOffers=makeSponsors(t.rep)}}
+ t.budget+=tickets+spon-wages();S.inbox.unshift(`Financieel: tickets ${euro(tickets)}, sponsor ${euro(spon)}, lonen ${euro(wages())}.`);
+}
+
+/* Press */
+function renderPress(){
+ if(!S.pendingPress){html(`<div class="card"><h2>Pers</h2><p>Geen openstaand persmoment.</p><button onclick="renderDashboard()">Terug</button></div>`,"more");return}
+ let p=S.pendingPress,q=p.result==="win"?`Sterke prestatie tegen ${p.opponent}. Wat was de sleutel?`:p.result==="draw"?`Een gelijkspel tegen ${p.opponent}. Tevreden?`:`Nederlaag tegen ${p.opponent}. Waar liep het mis?`;
+ html(`<div class="card"><h2>Persconferentie</h2><p><strong>Journalist:</strong> "${q}"</p></div>
+ ${[
+  ["Spelers steunen","Ik ben trots op de groep.",1],
+  ["Kritisch zijn","Sommige spelers moeten beter.",2],
+  ["Verantwoordelijkheid nemen","Ik neem dit op mij.",3],
+  ["Scheidsrechter bekritiseren","De arbitrage was zwak.",4]
+ ].map(a=>`<div class="option-card" onclick="answerPress(${a[2]})"><h3>${a[0]}</h3><p class="muted">${a[1]}</p></div>`).join("")}`,"more");
+}
+function answerPress(c){
+ if(c===1){S.popularity+=3;boostMorale(2);S.mediaRelation+=1}
+ if(c===2){boostMorale(-2);S.popularity-=1;if(S.pendingPress.result==="loss")S.boardTrust+=2;else S.boardTrust-=1}
+ if(c===3){S.boardTrust+=3;S.mediaRelation+=2;S.popularity+=1}
+ if(c===4){S.popularity+=2;S.mediaRelation-=4;S.boardTrust-=1}
+ S.popularity=clamp(S.popularity,0,100);S.boardTrust=clamp(S.boardTrust,0,100);S.mediaRelation=clamp(S.mediaRelation,0,100);
+ S.pendingPress=null;S.inbox.unshift(`Pers afgehandeld. Publiek ${S.popularity}%, bestuur ${S.boardTrust}%, media ${S.mediaRelation}%.`);
+ save();renderDashboard();
+}
+function boostMorale(d){squad(S.userTeamId).forEach(p=>p.mor=clamp(p.mor+d,20,99))}
+
+/* Main screens */
+function renderCalendar(){
+ let rows=[...S.schedule].sort((a,b)=>a.order-b.order);
+ html(`<div class="card"><h2>Kalender</h2></div>
+ ${rows.map(m=>`<div class="item"><strong>${m.roundName}</strong><p>${compName(m.type)} · ${teamById(m.home).name} - ${teamById(m.away).name}</p><p class="muted">Ref: ${m.referee} · Verwacht: ${m.expectedAttendance}</p><p>${m.played?`Uitslag: ${m.hg} - ${m.ag} · Toeschouwers: ${m.attendance||"-"}`:"Nog te spelen"}</p></div>`).join("")}`,"cal");
+}
+function renderTeam(){
+ let ps=sorted(squad(S.userTeamId));
+ html(`<div class="card"><h2>Selectie</h2><div class="actions"><button onclick="renderLineup()">Opstelling</button><button onclick="renderTransfers()">Transfers</button></div></div>
+ ${ps.map(p=>`<div class="item"><h3>${p.name}</h3><p>${p.pos} · Rating <strong>${rating(p)}</strong> · ${p.age} jaar</p><p>Conditie ${p.sta} · Moraal ${p.mor}</p><p class="${p.injury>0||p.susp>0?"red":"green"}">${p.injury>0?`Blessure ${p.injury}`:p.susp>0?`Geschorst ${p.susp}`:"Fit"}</p><p>Waarde ${euro(p.value)} · Loon ${euro(p.wage)}</p><button class="danger small" onclick="sell('${p.id}')">Verkopen</button></div>`).join("")}`,"team");
+}
+function renderLineup(){
+ let sq=availableSquad(S.userTeamId);if(sq.length<5)sq=squad(S.userTeamId);
+ const opts=(pos,sel)=>sorted(sq.filter(p=>p.pos===pos)).concat(sorted(sq.filter(p=>p.pos!==pos))).map(p=>`<option value="${p.id}" ${p.id===sel?"selected":""}>${p.name} · ${p.pos} · ${rating(p)}</option>`).join("");
+ html(`<div class="card"><h2>Opstelling</h2>
+ ${[["gk","Keeper"],["def","Verdediger"],["fl1","Flank"],["fl2","Flank"],["piv","Pivot"]].map(x=>`<p>${x[1]}</p><select id="${x[0]}">${opts(x[1],S.lineup[x[0]])}</select>`).join("")}
+ <p>Tactiek</p><select id="tactic">${tactics.map(t=>`<option ${t===S.tactic?"selected":""}>${t}</option>`).join("")}</select>
+ <div class="actions"><button class="success" onclick="saveLineup()">Opslaan</button><button onclick="autoLineup();save();renderLineup()">Auto</button></div></div>`,"team");
+}
+function saveLineup(){
+ let ids=["gk","def","fl1","fl2","piv"].map(id=>document.getElementById(id).value);
+ if(new Set(ids).size<5)return alert("Kies vijf unieke spelers.");
+ S.lineup={gk:ids[0],def:ids[1],fl1:ids[2],fl2:ids[3],piv:ids[4]};S.tactic=document.getElementById("tactic").value;save();renderDashboard();
+}
+function renderTransfers(){
+ let rows=sorted(freePlayers()).slice(0,staffBonus("scout")?30:18);
+ html(`<div class="card"><h2>Transfermarkt</h2><p class="muted">Budget ${euro(team().budget)}</p></div>
+ ${rows.map(p=>`<div class="item"><h3>${p.name}</h3><p>${p.pos} · Rating ${rating(p)} · ${p.age} jaar</p><p>Waarde ${euro(p.value)} · Loon ${euro(p.wage)}</p><button class="success small" onclick="buy('${p.id}')">Kopen</button></div>`).join("")}`,"team");
+}
+function buy(id){let p=S.players.find(x=>x.id===id),price=Math.round(p.value*1.08);if(team().budget<price)return alert("Onvoldoende budget.");team().budget-=price;p.teamId=S.userTeamId;S.inbox.unshift(`${p.name} gekocht voor ${euro(price)}.`);save();renderTransfers()}
+function sell(id){if(squad(S.userTeamId).length<=6)return alert("Minstens 6 spelers behouden.");let p=S.players.find(x=>x.id===id),offer=Math.round(p.value*r(75,116)/100);if(!confirm(`Bod ${euro(offer)} voor ${p.name}. Accepteren?`))return;team().budget+=offer;p.teamId=null;autoLineup();S.inbox.unshift(`${p.name} verkocht voor ${euro(offer)}.`);save();renderTeam()}
+
+/* More */
+function renderMore(){
+ html(`<div class="card"><h2>Menu</h2>
+ <div class="grid2">
+  <button onclick="renderBoard()">🏛️ Bestuur</button>
+  <button onclick="renderFinance()">💰 Financiën</button>
+  <button onclick="renderStaff()">👔 Staff</button>
+  <button onclick="renderKit()">🎽 Tenue</button>
+  <button onclick="renderStats()">📊 Stats</button>
+  <button onclick="renderCompetitions()">🏟️ Stand</button>
+  <button onclick="renderHistory()">📜 Historiek</button>
+  <button onclick="renderTrophies()">🏆 Prijzen</button>
+  <button onclick="renderInbox()">✉️ Inbox</button>
+  <button onclick="train()">🧪 Training</button>
+ </div>
+ <div class="actions"><button class="danger" onclick="reset()">Save wissen</button></div></div>`,"more");
+}
+function renderBoard(){
+ updateBoard();
+ html(`<div class="grid2"><div class="stat"><div class="label">Bestuur</div><div class="value yellow">${S.boardTrust}%</div></div><div class="stat"><div class="label">Publiek</div><div class="value blue">${S.popularity}%</div></div><div class="stat"><div class="label">Media</div><div class="value">${S.mediaRelation}%</div></div><div class="stat"><div class="label">Budget</div><div class="value ${team().budget>=0?"green":"red"}">${euro(team().budget)}</div></div></div>
+ <div class="card"><h2>Bestuursruimte</h2><p><strong>Volgende match:</strong> ${S.board.next}</p><p><strong>Seizoen:</strong> ${S.board.season}</p><p><strong>Beker:</strong> ${S.board.cup}</p><p><strong>Europa:</strong> ${S.board.europe}</p><p><strong>Financiën:</strong> ${S.board.finance}</p></div>`,"more");
+}
+function renderFinance(){
+ html(`<div class="grid2"><div class="stat"><div class="label">Budget</div><div class="value green">${euro(team().budget)}</div></div><div class="stat"><div class="label">Fans</div><div class="value">${team().fans}</div></div></div>
+ <div class="card"><h2>Financiën</h2><p>Ticketprijs</p><input id="ticket" type="number" value="${S.ticketPrice}" min="5" max="45"><button class="success full" onclick="saveTicket()">Opslaan</button></div>
+ ${S.sponsor?`<div class="card"><h3>Sponsor</h3><p>${S.sponsor.name}</p><p>Vast ${euro(S.sponsor.base)} · Bonus ${euro(S.sponsor.winBonus)} · ${S.sponsor.duration} matchen</p></div>`:`<div class="card"><h3>Sponsorvoorstellen</h3>${S.sponsorOffers.map(o=>`<div class="item"><strong>${o.name}</strong><p>Vast ${euro(o.base)} · Bonus ${euro(o.winBonus)} · ${o.duration} matchen</p><button class="success small" onclick="acceptSponsor('${o.id}')">Accepteren</button> <button class="warning small" onclick="negSponsor('${o.id}')">Onderhandel</button></div>`).join("")}</div>`}`,"more");
+}
+function saveTicket(){let v=+document.getElementById("ticket").value;if(v<5||v>45)return alert("Tussen 5 en 45 euro.");S.ticketPrice=v;save();renderFinance()}
+function acceptSponsor(id){S.sponsor={...S.sponsorOffers.find(o=>o.id===id)};S.sponsorOffers=[];save();renderFinance()}
+function negSponsor(id){let o=S.sponsorOffers.find(x=>x.id===id),chance=.45+staffBonus("commercial")/180;if(Math.random()<chance){o.base=Math.round(o.base*1.15);o.winBonus=Math.round(o.winBonus*1.15);S.inbox.unshift("Onderhandeling geslaagd.")}else{S.sponsorOffers=S.sponsorOffers.filter(x=>x.id!==id);S.inbox.unshift("Sponsor haakt af.")}save();renderFinance()}
+function renderStaff(){
+ if(!S.staffPool)S.staffPool=makeStaffPool();
+ html(`<div class="card"><h2>Trainerstaff</h2>${staffRoles.map(([k,role])=>{let s=S.staff[k];return`<div class="item"><strong>${role}</strong><p>${s?s.name+" · niveau "+s.rating:"Vacant"}</p></div>`}).join("")}</div>
+ <div class="card"><h3>Beschikbaar</h3>${S.staffPool.map(s=>`<div class="item"><strong>${s.name}</strong><p>${s.role} · niveau ${s.rating}</p><p class="muted">${s.desc}</p><p>Tekengeld ${euro(s.fee)} · loon ${euro(s.wage)}</p><button class="success small" onclick="hireStaff('${s.id}')">Aannemen</button></div>`).join("")}</div>`,"more");
+}
+function hireStaff(id){let s=S.staffPool.find(x=>x.id===id);if(team().budget<s.fee)return alert("Onvoldoende budget.");team().budget-=s.fee;S.staff[s.key]=s;S.staffPool=S.staffPool.filter(x=>x.id!==id);save();renderStaff()}
+function renderKit(){
+ html(`<div class="card"><h2>Tenue-editor</h2><div class="kit-wrap"><div class="kit ${team().pattern}" style="--p:${team().c1};--s:${team().c2}"></div><div>${team().name}</div></div><p>Hoofdkleur</p><input id="c1" type="color" value="${team().c1}"><p>Tweede kleur</p><input id="c2" type="color" value="${team().c2}"><p>Patroon</p><select id="pattern">${["plain","vertical","horizontal","sash"].map(p=>`<option ${p===team().pattern?"selected":""}>${p}</option>`).join("")}</select><button class="success full" onclick="saveKit()">Opslaan</button></div>`,"more");
+}
+function saveKit(){team().c1=document.getElementById("c1").value;team().c2=document.getElementById("c2").value;team().pattern=document.getElementById("pattern").value;save();renderKit()}
+function renderStats(){
+ const playerClub=p=>teamById(p.teamId)?.name||"Vrij";
+ const rows=(type,field)=>S.players.filter(p=>p.stats?.[type]?.[field]>0).sort((a,b)=>b.stats[type][field]-a.stats[type][field]).slice(0,10);
+ html(`<div class="card"><h2>Statistieken</h2></div>${["league","cup","europe"].map(t=>`<div class="card"><h3>${compName(t)} topscorers</h3>${rows(t,"goals").map((p,i)=>`<div class="item">${i+1}. <strong>${p.name}</strong><br>${playerClub(p)} · ${p.stats[t].goals} goals</div>`).join("")||"<p class='muted'>Nog geen goals.</p>"}<h3>Assists</h3>${rows(t,"assists").map((p,i)=>`<div class="item">${i+1}. <strong>${p.name}</strong><br>${playerClub(p)} · ${p.stats[t].assists} assists</div>`).join("")||"<p class='muted'>Nog geen assists.</p>"}</div>`).join("")}`,"more");
+}
+function renderCompetitions(){
+ html(`<div class="card"><h2>Stand</h2></div>${standings().map((t,i)=>`<div class="item"><strong>${i+1}. ${t.name}</strong><p>${t.pts} ptn · ${t.gf}-${t.ga} · DS ${t.gf-t.ga}</p></div>`).join("")}
+ <div class="card"><h2>Beker & Europa</h2>${S.schedule.filter(m=>m.type!=="league").map(m=>`<div class="item"><strong>${compName(m.type)} · ${m.roundName}</strong><p>${teamById(m.home).name} - ${teamById(m.away).name}</p><p>${m.played?m.hg+" - "+m.ag:"Nog te spelen"}</p></div>`).join("")}</div>`,"more");
+}
+function renderHistory(){
+ html(`<div class="card"><h2>Historiek</h2><h3>Competitie</h3>${S.history.league.map(h=>`<div class="item">Seizoen ${h.season}<br>Kampioen: ${h.champion}<br>Vice: ${h.runnerUp}<br>Degradant: ${h.relegated}</div>`).join("")||"<p class='muted'>Nog geen historie.</p>"}<h3>Beker</h3>${S.history.cup.map(h=>`<div class="item">Seizoen ${h.season}<br>Winnaar: ${h.winner}<br>Finalist: ${h.runnerUp}</div>`).join("")||"<p class='muted'>Nog geen historie.</p>"}<h3>Europa</h3>${S.history.europe.map(h=>`<div class="item">Seizoen ${h.season}<br>Winnaar: ${h.winner}<br>Finalist: ${h.runnerUp}</div>`).join("")||"<p class='muted'>Nog geen historie.</p>"}<h3>Awards</h3>${S.history.awards.map(h=>`<div class="item">Seizoen ${h.season}<br>Gouden Schoen: ${h.goldenShoe}<br>Europees: ${h.europeanPlayer}<br>Manager: ${h.managerOfYear}</div>`).join("")||"<p class='muted'>Nog geen awards.</p>"}</div>`,"more");
+}
+function renderTrophies(){
+ html(`<div class="card"><h2>Prijzenkast</h2><h3>Manager</h3>${S.manager.trophies.map(t=>`<div class="item">${t.name}<br>${t.club} · ${t.season}</div>`).join("")||"<p class='muted'>Nog geen prijzen.</p>"}<h3>Club</h3>${team().trophies.map(t=>`<div class="item">${t.name}<br>${t.season}</div>`).join("")||"<p class='muted'>Deze club heeft nog geen prijzen.</p>"}</div>`,"more");
+}
+function renderInbox(){html(`<div class="card"><h2>Inbox</h2>${S.inbox.map(m=>`<div class="item">${m}</div>`).join("")}</div>`,"more")}
+function train(){let cost=2300;if(team().budget<cost)return alert("Onvoldoende budget.");team().budget-=cost;squad(S.userTeamId).forEach(p=>{p.sta=clamp(p.sta+r(1,5),25,99);p.mor=clamp(p.mor+r(0,3),20,99)});S.inbox.unshift("Training afgerond.");save();renderDashboard()}
+
+/* Season end */
+function simulateAllRemaining(){
+ let guard=0;
+ while(S.schedule.some(m=>!m.played)&&guard<200){let m=S.schedule.filter(x=>!x.played).sort((a,b)=>a.order-b.order)[0];simAI(m);guard++}
+}
+function bestPlayer(type){
+ let arr=S.players.map(p=>({p,score:rating(p)+(p.stats?.[type]?.goals||0)*4+(p.stats?.[type]?.assists||0)*3+(p.stats?.[type]?.apps||0)*.4})).sort((a,b)=>b.score-a.score);
+ return arr[0].p;
+}
+function managerOfYear(){
+ let st=standings(),best={name:"AI Manager",club:st[0].name,score:0};
+ st.forEach((t,i)=>{let sc=100-i*8+t.rep/4;if(t.id===S.userTeamId)sc+=S.manager.rep/3+S.popularity/4+S.boardTrust/4;if(sc>best.score)best={name:t.id===S.userTeamId?S.manager.name:"AI Manager",club:t.name,score:sc}});
+ return best;
+}
+function award(t,name){
+ let season="Seizoen "+S.season;t.trophies.push({name,season});
+ if(t.id===S.userTeamId)S.manager.trophies.push({name,club:t.name,season});
+}
+function renderSeasonEnd(){
+ simulateAllRemaining();
+ let st=standings(),champ=st[0],second=st[1],third=st[2],rel=st[st.length-1];
+ award(champ,"Kampioen Eerste Klasse");
+ let cupFinal=S.schedule.find(m=>m.type==="cup"&&m.roundName==="Beker finale"),cupW=null,cupR=null;
+ if(cupFinal){cupW=teamById(winner(cupFinal));cupR=teamById(cupFinal.home===cupW.id?cupFinal.away:cupFinal.home);award(cupW,"Beker van België")}
+ let euroFinal=S.schedule.find(m=>m.type==="europe"&&m.roundName==="Europese finale"),euroW=null,euroR=null;
+ if(euroFinal){euroW=teamById(winner(euroFinal));euroR=teamById(euroFinal.home===euroW.id?euroFinal.away:euroFinal.home);award(euroW,"Europese Beker")}
+ let golden=bestPlayer("league"),euroP=bestPlayer("europe"),moty=managerOfYear();
+ S.history.league.push({season:S.season,champion:champ.name,runnerUp:second.name,third:third.name,relegated:rel.name});
+ if(cupW)S.history.cup.push({season:S.season,winner:cupW.name,runnerUp:cupR.name});
+ if(euroW)S.history.europe.push({season:S.season,winner:euroW.name,runnerUp:euroR.name});
+ S.history.awards.push({season:S.season,goldenShoe:golden.name,europeanPlayer:euroP.name,managerOfYear:moty.name+" ("+moty.club+")"});
+ S.euroQualified=[champ.id,second.id];
+ let pos=userPos();S.manager.rep=clamp(S.manager.rep+(pos<=2?6:pos<=4?3:pos>=8?-5:1),35,95);
+ let offers=makeJobOffers(rel.id);
+ html(`<div class="card"><h2>Seizoen ${S.season} afgelopen</h2><p>Kampioen: <strong>${champ.name}</strong></p><p>Vice: ${second.name}</p><p>Beker: ${cupW?cupW.name:"-"}</p><p>Europa: ${euroW?euroW.name:"-"}</p><p>Degradant: ${rel.name}</p><p>Gouden Schoen: ${golden.name}</p><p>Manager van het jaar: ${moty.name} (${moty.club})</p></div><div class="card"><h2>Jobaanbiedingen</h2>${offers.map(o=>`<div class="club-card" style="--c:${o.c1}" onclick="acceptJob(${o.id},${rel.id})"><h3>${o.name}</h3><p>Rep ${o.rep} · Budget ${euro(o.budget)}</p></div>`).join("")}</div>`,"more");
+}
+function makeJobOffers(relegatedId){
+ let offers=[team()];
+ S.teams.filter(t=>t.id<1000&&t.id!==S.userTeamId&&t.id!==relegatedId&&Math.abs(t.rep-S.manager.rep)<18).sort(()=>Math.random()-.5).slice(0,3).forEach(t=>offers.push(t));
+ return offers;
+}
+function acceptJob(newId,relegatedId){
+ promoteReplace(relegatedId);
+ S.userTeamId=newId===relegatedId?S.teams[0].id:newId;
+ S.season++;S.manager.seasons++;S.schedule=[];S.staffPool=makeStaffPool();S.sponsorOffers=makeSponsors(team().rep);S.pendingPress=null;
+ S.players.forEach(p=>{p.yellows=0;p.susp=0;p.injury=0;p.contract--;if(p.contract<=0&&p.teamId===S.userTeamId){p.teamId=null}});
+ for(let i=0;i<8;i++){S.players.push(makePlayer(null,pick(positions),r(54,80)))}
+ buildSchedule();autoLineup();S.inbox.unshift("Nieuw seizoen gestart bij "+team().name+".");save();renderDashboard();
+}
+function promoteReplace(relegatedId){
+ let t=teamById(relegatedId),name=S.lower.shift()||("Promovendus "+r(1,99));
+ S.lower.push(t.name);t.name=name;t.rep=r(53,61);t.budget=r(21000,28000);t.fans=r(700,950);t.c1=pick(["#0ea5e9","#22c55e","#eab308","#ec4899","#f97316"]);t.c2="#111827";t.pattern=pick(["plain","vertical","horizontal","sash"]);t.trophies=[];
+ S.players=S.players.filter(p=>p.teamId!==relegatedId);fillSquad(relegatedId,t.rep);
+}
+
+function boot(){try{if(load())renderDashboard();else renderStart()}catch(e){const app=by("app"); if(app)app.innerHTML='<div class="card"><h2>Startfout</h2><p class="red">'+String(e.message||e)+'</p><button class="danger" onclick="reset()">Save wissen</button></div>';}}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+</script>
+</body>
+</html>
